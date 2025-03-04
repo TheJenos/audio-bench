@@ -37,13 +37,12 @@ transcribe_btn = st.button("Transcribe")
 
 assembly_ai_tab, open_ai_tab, eleven_labs_tab = st.tabs(["AssemblyAI", "OpenAI", "ElevenLabs"])
 
-def eleven_labs_transcription(input_file):
+def eleven_labs_transcription(input_bites):
     with eleven_labs_tab:
         with st.spinner('Processing...'):
             start_time = time.time()
-            input_file = BytesIO(input_file.read())
             transcript = eleven_labs_client.speech_to_text.convert(
-                file=input_file,
+                file=input_bites,
                 model_id="scribe_v1"
             )
             end_time = time.time()
@@ -52,12 +51,11 @@ def eleven_labs_transcription(input_file):
             st.markdown(transcript.text)
             return duration
 
-def assembly_ai_transcription(input_file):
+def assembly_ai_transcription(input_bites):
     with assembly_ai_tab:
         with st.spinner('Processing...'):
             start_time = time.time()
-            input_file = BytesIO(input_file.read())
-            transcript = assembly_ai_client.transcribe(input_file)
+            transcript = assembly_ai_client.transcribe(input_bites)
             end_time = time.time()
             duration = end_time - start_time
             st.markdown(f"Processing time: {duration:.2f} seconds")
@@ -80,13 +78,14 @@ def open_ai_transcription(input_file):
 
 if transcribe_btn: 
     input_file = upload_audio or record_audio
+    input_bites = BytesIO(input_file.read())
 
     if input_file is None: 
         st.error('Input File required')
     else:
-        assembly_ai_duration = assembly_ai_transcription(input_file) 
+        assembly_ai_duration = assembly_ai_transcription(input_bites) 
         open_ai_duration = open_ai_transcription(input_file)
-        eleven_labs_duration = eleven_labs_transcription(input_file)
+        eleven_labs_duration = eleven_labs_transcription(input_bites)
 
         chart_data = pd.DataFrame(
             {
