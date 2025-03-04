@@ -83,21 +83,22 @@ if transcribe_btn:
     if input_file is None: 
         st.error('Input File required')
     else:
-        assembly_ai_duration = assembly_ai_transcription(input_bites) 
-        open_ai_duration = open_ai_transcription(input_file)
-        eleven_labs_duration = eleven_labs_transcription(input_bites)
+        with st.spinner('Processing...'):
+            assembly_ai_duration = assembly_ai_transcription(input_bites) 
+            open_ai_duration = open_ai_transcription(input_file)
+            eleven_labs_duration = eleven_labs_transcription(input_bites)
 
-        chart_data = pd.DataFrame(
-            {
-                "durations": [assembly_ai_duration, open_ai_duration, eleven_labs_duration],
-                "services": ["AssemblyAI", "OpenAI", "ElevenLabs"],
-            }
-        )
+            chart_data = pd.DataFrame(
+                {
+                    "durations": [assembly_ai_duration, open_ai_duration, eleven_labs_duration],
+                    "services": ["AssemblyAI", "OpenAI", "ElevenLabs"],
+                }
+            )
 
-        st.bar_chart(
-            chart_data,
-            x="services",
-            y="durations",
-        )
+            st.bar_chart(
+                chart_data,
+                x="services",
+                y="durations",
+            )
 
         st.success("Done!")
